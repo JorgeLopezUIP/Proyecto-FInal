@@ -1,0 +1,13 @@
+services: 
+  mariadb: 
+    image: mariadb
+    container_name: proyecto_final
+    restart: unless-stopped
+    environment: 
+      MARIADB_ROOT_PASSWORD: root123
+      MARIADB_DATABASE: Panama_Express 
+      MARIADB_USER: user 
+      MARIADB_PASSWORD: pass123
+    ports: 
+      - "3307:3306"
+    
