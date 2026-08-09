@@ -4,6 +4,6 @@
 
 3.Ejecutar database_datos.py 
 
-4.Ejecutar ETL.py
+4.Ejecutar ETL.py (solo en la presentacion)
 
 El archivo ipynb solo se va a usar para la presentacion
