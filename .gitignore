@@ -14,3 +14,7 @@ __pycache__/
 
 # Excepciones
 !respaldos/.gitkeep
+
+.env
+node_modules/
+.DS_Store
