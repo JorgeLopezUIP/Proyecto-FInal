@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Resultado LOAD</title>
+
+    <style>
+
+        .resultado {
+
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+
+        }
+
+        .mensaje {
+
+            padding: 8px;
+            margin: 5px 0;
+            border-bottom: 1px solid #ddd;
+
+        }
+
+        .correcto {
+
+            color: green;
+
+        }
+
+        .omitido {
+
+            color: orange;
+
+        }
+
+        .error {
+
+            color: red;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Resultado de LOAD</h1>
+
+
+    <div class="resultado">
+
+        <h2>Resumen</h2>
+
+        <p>
+            Insertados:
+            <strong>{{ insertados }}</strong>
+        </p>
+
+        <p>
+            Omitidos:
+            <strong>{{ omitidos }}</strong>
+        </p>
+
+        <p>
+            Errores:
+            <strong>{{ errores }}</strong>
+        </p>
+
+    </div>
+
+
+    <h2>Detalle de registros</h2>
+
+
+    {% for mensaje in mensajes %}
+
+        <div class="mensaje">
+
+            {{ mensaje }}
+
+        </div>
+
+    {% endfor %}
+
+
+    <br>
+
+
+    <a href="/">
+        Procesar otro archivo
+    </a>
+
+</div>
+
+</body>
+
+</html>

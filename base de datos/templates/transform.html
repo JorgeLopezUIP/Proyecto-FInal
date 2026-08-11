@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Transformación</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Resultado de Transform</h1>
+
+
+    <div class="resumen">
+
+        <div>
+            <strong>{{ total }}</strong>
+            <span>Originales</span>
+        </div>
+
+        <div>
+            <strong>{{ validos }}</strong>
+            <span>Válidos</span>
+        </div>
+
+        <div>
+            <strong>{{ invalidos }}</strong>
+            <span>Inválidos</span>
+        </div>
+
+        <div>
+            <strong>{{ duplicados }}</strong>
+            <span>Duplicados</span>
+        </div>
+
+        <div>
+            <strong>{{ cedulas_invalidas }}</strong>
+            <span>Cédulas inválidas</span>
+        </div>
+
+        <div>
+            <strong>{{ pesos_invalidos }}</strong>
+            <span>Pesos inválidos</span>
+        </div>
+
+    </div>
+
+
+    <h2>Registros válidos</h2>
+
+    <div class="tabla-container">
+
+        {{ tabla_validos | safe }}
+
+    </div>
+
+
+    <h2>Registros inválidos</h2>
+
+    <div class="tabla-container">
+
+        {{ tabla_invalidos | safe }}
+
+    </div>
+
+
+    <form action="/load" method="POST">
+
+        <button type="submit">
+            Cargar datos a MariaDB
+        </button>
+
+    </form>
+
+
+    <br>
+
+
+    <a href="/">
+        Cargar otro archivo
+    </a>
+
+</div>
+
+</body>
+
+</html>

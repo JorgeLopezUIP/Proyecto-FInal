@@ -11,7 +11,12 @@ VALUES
 ('Carlos Díaz', '8-100-1002', 'carlos.diaz@email.com', '6000-1003'),
 ('María González', '8-100-1003', 'maria.gonzalez@email.com', '6000-1004'),
 ('Pedro Rodríguez', '8-100-1004', 'pedro.rodriguez@email.com', '6000-1005'),
-('Luis Martínez', '8-100-1005', 'luis.martinez@email.com', '6000-1006'); """)
+('Luis Martínez', '8-100-1005', 'luis.martinez@email.com', '6000-1006'),
+('Luis Gómez', '8-100-1006', 'luis.gomez@email.com', '6000-1007'),
+('Pedro Ruiz', '8-100-1007', 'pedro.ruiz@email.com', '6000-1008'),
+('María López', '8-100-1008', 'maria.lopez@email.com', '6000-1009'),
+('Ana Torres', '8-100-1009', 'ana.torres@email.com', '6000-1010');
+ """)
 
 
 cursor.execute("""INSERT INTO casilleros

@@ -1,3 +1,4 @@
 pandas==3.0.5
 pymysql==1.2.0
 openpyxl==3.1.5
+Flask==3.1.0

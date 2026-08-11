@@ -1,0 +1,152 @@
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: #f2f2f2;
+
+    margin: 0;
+
+    padding: 30px;
+}
+
+
+.container {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 10px;
+
+}
+
+
+h1 {
+
+    text-align: center;
+
+}
+
+
+form {
+
+    margin: 25px 0;
+
+}
+
+
+input {
+
+    margin: 15px 0;
+
+    padding: 10px;
+
+}
+
+
+button {
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+}
+
+
+.tabla-container {
+
+    overflow-x: auto;
+
+    margin-bottom: 30px;
+
+}
+
+
+.tabla {
+
+    border-collapse: collapse;
+
+    width: 100%;
+
+}
+
+
+.tabla th,
+.tabla td {
+
+    border: 1px solid #ccc;
+
+    padding: 8px;
+
+    text-align: left;
+
+}
+
+
+.tabla th {
+
+    background: #eee;
+
+}
+
+
+.resumen {
+
+    display: flex;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    margin: 30px 0;
+
+}
+
+
+.resumen div {
+
+    padding: 20px;
+
+    background: #eee;
+
+    border-radius: 8px;
+
+    min-width: 120px;
+
+    text-align: center;
+
+}
+
+
+.resumen strong {
+
+    display: block;
+
+    font-size: 25px;
+
+}
+
+
+.resumen span {
+
+    display: block;
+
+    margin-top: 5px;
+
+}
+
+
+.mensajes p {
+
+    padding: 8px;
+
+    border-bottom: 1px solid #ddd;
+}

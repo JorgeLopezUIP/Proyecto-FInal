@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Extract</title>
+
+    <style>
+
+        .tabla {
+
+            border-collapse: collapse;
+            width: 100%;
+
+        }
+
+        .tabla th,
+        .tabla td {
+
+            border: 1px solid #ccc;
+            padding: 8px;
+
+        }
+
+        .tabla th {
+
+            background-color: #eee;
+
+        }
+
+        .tabla-container {
+
+            overflow-x: auto;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>EXTRACT</h1>
+
+
+    <h2>Archivo Excel recibido</h2>
+
+
+    <p>
+        Registros encontrados:
+        <strong>{{ total }}</strong>
+    </p>
+
+
+    <p>
+        Columnas:
+        <strong>{{ columnas }}</strong>
+    </p>
+
+
+    <hr>
+
+
+    <h2>Datos originales</h2>
+
+
+    <div class="tabla-container">
+
+        {{ tabla | safe }}
+
+    </div>
+
+
+    <br>
+
+
+    <!-- TRANSFORM -->
+
+    <form
+        action="/transform"
+        method="POST"
+    >
+
+        <button type="submit">
+
+            TRANSFORMAR DATOS
+
+        </button>
+
+    </form>
+
+
+    <br>
+
+
+    <a href="/">
+        Seleccionar otro archivo
+    </a>
+
+</div>
+
+</body>
+
+</html>

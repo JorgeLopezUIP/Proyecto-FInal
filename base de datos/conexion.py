@@ -1,7 +1,7 @@
 import pymysql 
 
-
-conexion = pymysql.connect(
+def obtener_conexion():
+    return  pymysql.connect(
     host= "localhost",
     port=3307,
     user="user",
@@ -9,7 +9,3 @@ conexion = pymysql.connect(
     database="Panama_Express",
     cursorclass=pymysql.cursors.DictCursor
 )
-
-
-def obtener_conexion():
-    return conexion
