@@ -4,6 +4,10 @@
 
 3.Ejecutar database_datos.py 
 
-4.Ejecutar ETL.py (solo en la presentacion)
+4.Ejecutar app.py 
 
-El archivo ipynb solo se va a usar para la presentacion
+5. Seleccionar el archivo manifiesto_miami_20_paquetes.xlsx y darle a procesar
+
+6. Una ves vizualisados los datos presionar en Transformar datos
+
+7. Carga los datos validos a MariaDB
