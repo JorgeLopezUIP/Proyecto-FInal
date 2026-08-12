@@ -67,34 +67,12 @@ VALUES
 cursor.execute("""INSERT INTO categoria_productos
 (nombre, descripcion)
 VALUES
-('Laptop Lenovo', 'Computadora portátil Lenovo'),
-('Camisa deportiva', 'Camisa deportiva'),
-('Monitor Samsung', 'Monitor Samsung'),
-('Audífonos Bluetooth', 'Audífonos inalámbricos Bluetooth'),
-('Zapatos deportivos', 'Calzado deportivo'),
-('Consola de videojuegos', 'Consola para videojuegos'),
-('Vestido', 'Vestido'),
-('Televisor', 'Televisor'),
-('Mouse inalámbrico', 'Mouse inalámbrico'),
-('Teclado mecánico', 'Teclado mecánico'),
-('Tablet', 'Tableta electrónica'),
-('Camisa', 'Camisa'),
-('Monitor', 'Monitor'),
-('Zapatos', 'Calzado'),
-('Cartera', 'Cartera'),
-('Smartwatch', 'Reloj inteligente'),
-('Pantalón', 'Pantalón'),
-('Impresora', 'Impresora'),
-('Monitor grande', 'Monitor de gran tamaño'),
-('Cámara', 'Cámara digital'),
-('Blusa', 'Blusa'),
-('Laptop', 'Computadora portátil'),
-('Perfume', 'Perfume'),
-('Consola', 'Consola de videojuegos'),
-('Audífonos', 'Audífonos'),
-('Teclado', 'Teclado'),
-('Cámara digital', 'Cámara digital'),
-('Accesorios', 'Accesorios electrónicos');""")
+('Electronico', 'Productos electrónicos'),
+('Ropa', 'Prendas de vestir'),
+('Libro', 'Libros y material de lectura'),
+('Accesorios', 'Accesorios para diferentes productos'),
+('Calzado', 'Productos de calzado'),
+('Otros', 'Productos que no pertenecen a otra categoría');""")
 
 conexion.commit()
 cursor.close()

@@ -13,7 +13,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS clientes (
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS categoria_productos(
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(255) NOT NULL UNIQUE,
+    nombre ENUM(
+    'Ropa', 
+    'Electronico', 
+    'Libro',
+    'Accesorios',
+    'Calzado', 
+    'Otros') NOT NULL,
     descripcion VARCHAR(255) 
 ); """)
 
