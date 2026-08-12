@@ -132,38 +132,3 @@ def transformar_datos(df):
 
         "pesos_invalidos": pesos_invalidos
     }
-
-
-
-
-
-
-
-
-
-
-"""print()
-print("==============================")
-print("       Registros Validos")
-print("==============================")
-print(df_validos)
-
-print("Cantidad original:", len(df))
-print("Registros inválidos:", len(df_invalidos))
-print("Registros válidos:", len(df_validos))
-
-e = input("Desea ver los registros invalidos Y/N: ")
-if e.upper() == "Y":
-    limpiar_pantalla()
-    print()
-    print("==============================")
-    print("       Registros Invalidos")
-    print("==============================")
-    print(df_invalidos) 
-
-q = input("Desea alamcenar los registros validos Y/N: ")
-if q.upper() == "Y":
-    
-    fecha = datetime.now().strftime("%Y%m%d_%H%M%S")
-    df_validos.to_csv(validos/f"Datos_validos_{fecha}.cvs", index=False,encoding="utf-8-sig")
-    print("Datos almacenados")"""
