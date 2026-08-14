@@ -11,6 +11,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS clientes (
     telefono VARCHAR(20) NOT NULL
 ); """)
 
+cursor.execute("""CREATE TABLE IF NOT EXISTS zonas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    tarifa decimal(10,2) NOT NULL
+); """)
+
 cursor.execute("""CREATE TABLE IF NOT EXISTS categoria_productos(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nombre ENUM(
@@ -51,6 +58,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS paquetes(
     largo DECIMAL(10,2),
     ancho DECIMAL(10,2),
     alto DECIMAL(10,2),
+    metodo_de_llegada ENUM('aereo', 'maritimo', 'terrestre') NOT NULL,
     descripcion VARCHAR(255),
     
     estado ENUM(

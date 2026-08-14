@@ -1,4 +1,3 @@
-
 import pandas as pd
 import re
 #Transform 
@@ -71,6 +70,13 @@ def transformar_datos(df):
         .str.replace(".", "-",regex=False) #Reemplaza puntos por guiones 
         .str.replace("--", "-",regex=False) #Corrige dobles guiones
     )
+
+    df["metodo de llegada"] = ( #Tabla de cedula
+        df["metodo de llegada"] 
+        .astype(str) #Convierte los datos en string
+        .str.strip() #Elimina los espacios en blanco
+        )
+    
 
     df["cedula_valida"] = (df["cedula"].apply(validar_cedula)) #Se aplica la funcion para validar cedula 
 

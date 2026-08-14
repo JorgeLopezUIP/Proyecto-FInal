@@ -1,105 +1,52 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Load · Manifiesto ETL{% endblock %}
+{% set stage = 'load' %}
 
-<html lang="es">
+{% block content %}
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Resultado LOAD</title>
-
-    <style>
-
-        .resultado {
-
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-
-        }
-
-        .mensaje {
-
-            padding: 8px;
-            margin: 5px 0;
-            border-bottom: 1px solid #ddd;
-
-        }
-
-        .correcto {
-
-            color: green;
-
-        }
-
-        .omitido {
-
-            color: orange;
-
-        }
-
-        .error {
-
-            color: red;
-
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Resultado de LOAD</h1>
-
-
-    <div class="resultado">
-
-        <h2>Resumen</h2>
-
-        <p>
-            Insertados:
-            <strong>{{ insertados }}</strong>
-        </p>
-
-        <p>
-            Omitidos:
-            <strong>{{ omitidos }}</strong>
-        </p>
-
-        <p>
-            Errores:
-            <strong>{{ errores }}</strong>
-        </p>
-
-    </div>
-
-
-    <h2>Detalle de registros</h2>
-
-
-    {% for mensaje in mensajes %}
-
-        <div class="mensaje">
-
-            {{ mensaje }}
-
-        </div>
-
-    {% endfor %}
-
-
-    <br>
-
-
-    <a href="/">
-        Procesar otro archivo
-    </a>
-
+<div class="waybill-row">
+  <div class="waybill tone-ok">
+    <div class="wb-label">Insertados</div>
+    <div class="wb-value">{{ insertados }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Omitidos</div>
+    <div class="wb-value">{{ omitidos }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-bad">
+    <div class="wb-label">Errores</div>
+    <div class="wb-value">{{ errores }}</div>
+    <div class="wb-barcode"></div>
+  </div>
 </div>
 
-</body>
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Paso 03 completado</p>
+      <h2>Carga finalizada</h2>
+    </div>
+    <div class="meta">{{ insertados }} insertados</div>
+  </div>
 
-</html>
+  <div class="log">
+    {% for m in mensajes %}
+      <div class="log-line"><span>{{ m }}</span></div>
+    {% else %}
+      <div class="log-line"><span>No se generaron mensajes durante la carga.</span></div>
+    {% endfor %}
+  </div>
+
+  <div class="actions-row">
+    <a href="/" class="btn">
+      Procesar otro lote
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+{% endblock %}
