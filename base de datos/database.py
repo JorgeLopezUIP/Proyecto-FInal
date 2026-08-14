@@ -33,10 +33,12 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS categoria_productos(
 cursor.execute("""CREATE TABLE IF NOT EXISTS casilleros (
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_cliente INT NOT NULL,
+    id_zona INT NOT NULL,
     codigo VARCHAR(50) NOT NULL UNIQUE,
     direccion VARCHAR(255) NOT NULL,
 
-    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id),
+    FOREIGN KEY (id_zona) REFERENCES zonas(id)
 ); """)
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS bodegas (
