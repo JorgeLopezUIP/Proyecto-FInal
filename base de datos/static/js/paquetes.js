@@ -31,6 +31,8 @@
     if (q) params.set("q", q);
     if (estado) params.set("estado", estado);
     if (metodo) params.set("metodo", metodo);
+    const orden = document.getElementById("f-orden").value;
+    if (orden) params.set("orden", orden);
 
     const cuerpoTabla = document.getElementById("tabla-paquetes-body");
     cuerpoTabla.innerHTML = "";
@@ -89,6 +91,13 @@
     document.getElementById("pd-cliente-nombre").textContent = data.paquete.cliente_nombre;
     document.getElementById("pd-cliente-cedula").textContent = data.paquete.cedula_pasaporte;
     document.getElementById("pd-categoria").textContent = data.paquete.categoria || "—";
+    document.getElementById("f-orden").addEventListener("change", buscar);
+
+    // static/js/paquetes.js — dentro de abrirDetalle(), justo después de pd-categoria
+    const fmtDim = (v) => (v === null || v === undefined || v === "") ? "No registrado" : `${v} cm`;
+    document.getElementById("pd-largo").textContent = fmtDim(data.paquete.largo);
+    document.getElementById("pd-ancho").textContent = fmtDim(data.paquete.ancho);
+    document.getElementById("pd-alto").textContent = fmtDim(data.paquete.alto);
 
     if (data.zona) {
       document.getElementById("pd-zona").textContent = data.zona.zona_nombre;
@@ -190,6 +199,8 @@
 
     buscar();
   }
+  
+  
 
   async function reenviarNotificacion() {
     if (!state.paqueteActual) return;

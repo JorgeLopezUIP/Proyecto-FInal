@@ -7,6 +7,23 @@ from correo import notificar_cambio_estado
 METODOS_VALIDOS = {"aereo", "maritimo", "terrestre"}
 
 
+def _numero_o_none(valor):
+    """Convierte un valor de fila de pandas a float, o a None si esta vacio,
+    es NaN, o no es un numero valido -- para largo/ancho/alto, que son
+    columnas opcionales y pueden venir vacias sin que la fila sea invalida."""
+    if valor is None:
+        return None
+    try:
+        if pd.isna(valor):
+            return None
+    except TypeError:
+        pass
+    try:
+        return float(valor)
+    except (TypeError, ValueError):
+        return None
+
+
 def _cargar_referencias(cursor):
     """Precarga clientes, categorias y bodega para no consultar la BD fila por fila."""
 
@@ -95,13 +112,22 @@ def cargar_datos(archivo_csv):
                         )
                         continue
 
+                    # largo/ancho/alto son opcionales: si el CSV no trae esas
+                    # columnas (excel sin medidas) o la fila las trae vacias,
+                    # se insertan como NULL en vez de fallar. fila.get()
+                    # devuelve None cuando la columna ni siquiera existe.
+                    largo = _numero_o_none(fila.get("largo"))
+                    ancho = _numero_o_none(fila.get("ancho"))
+                    alto = _numero_o_none(fila.get("alto"))
+
                     cursor.execute(
                         """
                         INSERT INTO paquetes (
                             id_cliente, id_bodega, id_categoria_producto,
-                            nombre, tracking, peso, descripcion, metodo_de_llegada
+                            nombre, tracking, peso, largo, ancho, alto,
+                            descripcion, metodo_de_llegada
                         )
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         """,
                         (
                             cliente["id"],
@@ -110,6 +136,9 @@ def cargar_datos(archivo_csv):
                             fila["descripcion"],   # no hay columna "nombre" separada en el CSV
                             tracking,
                             fila["peso"],
+                            largo,
+                            ancho,
+                            alto,
                             fila["descripcion"],
                             metodo,
                         )

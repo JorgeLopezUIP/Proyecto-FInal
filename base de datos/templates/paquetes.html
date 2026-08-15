@@ -29,6 +29,11 @@
     </select>
     <button class="btn" id="btn-buscar" type="button">Buscar</button>
   </div>
+  <!-- templates/paquetes.html — junto a los demás <select> de filtros -->
+  <select id="f-orden">
+    <option value="desc">Recepción: más nuevo primero</option>
+    <option value="asc">Recepción: más viejo primero</option>
+  </select>
 
   <div class="table-wrap">
     <table class="tabla" id="tabla-paquetes">
@@ -67,6 +72,16 @@
     </div>
   </div>
 
+    <!-- templates/paquetes.html — se agregó esta sección completa -->
+  <div class="pd-section">
+    <h4>Dimensiones</h4>
+    <div class="pd-readonly">
+      <div><span class="k">Largo</span><span class="v" id="pd-largo">—</span></div>
+      <div><span class="k">Ancho</span><span class="v" id="pd-ancho">—</span></div>
+      <div><span class="k">Alto</span><span class="v" id="pd-alto">—</span></div>
+    </div>
+  </div>
+
   <div class="pd-section">
     <h4>Tarifa aplicable (según zona del cliente)</h4>
     <div class="tarifa-box">
@@ -77,6 +92,7 @@
       <div class="zona" id="pd-tarifa-tipo"></div>
     </div>
   </div>
+  
 
   <div class="pd-section">
     <h4>Editar paquete</h4>

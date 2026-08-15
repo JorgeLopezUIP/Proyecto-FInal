@@ -325,6 +325,9 @@ def api_listar_paquetes():
     q = request.args.get("q", "").strip()
     estado = request.args.get("estado", "").strip()
     metodo = request.args.get("metodo", "").strip()
+    orden = request.args.get("orden", "desc").strip().lower()
+    if orden not in ("asc", "desc"):
+        orden = "desc"
 
     sql = """
         SELECT p.id, p.tracking, p.peso, p.metodo_de_llegada, p.estado,
@@ -347,7 +350,7 @@ def api_listar_paquetes():
         sql += " AND p.metodo_de_llegada = %s"
         params.append(metodo)
 
-    sql += " ORDER BY p.fecha_de_recepcion DESC LIMIT 300"
+    sql += f" ORDER BY p.fecha_de_recepcion {orden.upper()} LIMIT 300"
 
     try:
         conexion = obtener_conexion()

@@ -95,10 +95,22 @@ def _cliente_con_errata(nombre):
     return nombre
 
 
+def _dimension_aleatoria(minimo, maximo, prob_vacio=0.4):
+    """Genera una dimension en cm, o la deja en blanco (None) con cierta
+    probabilidad: en la vida real, muchos paquetes todavia no tienen
+    largo/ancho/alto medidos al momento de cargarlos (se miden despues, en
+    bodega), asi que el generador imita esa mezcla real de datos completos
+    e incompletos en vez de rellenar siempre los tres campos."""
+    if random.random() < prob_vacio:
+        return None
+    return round(random.uniform(minimo, maximo), 1)
+
+
 def generar_paquetes_aleatorios(cantidad=20, tasa_invalidos=0.15, semilla=None):
     """
     Genera un DataFrame con las mismas columnas que espera /extract
-    (Tracking, Cedula, Cliente, Descripcion, Peso, Metodo de llegada).
+    (Tracking, Cedula, Cliente, Descripcion, Peso, Metodo de llegada,
+    Largo, Ancho, Alto).
 
     La mayoria de las filas llevan erratas "sucias" pero solucionables por
     transformar_datos() (mayusculas/minusculas, espacios, puntos y guiones
@@ -143,6 +155,9 @@ def generar_paquetes_aleatorios(cantidad=20, tasa_invalidos=0.15, semilla=None):
             "Descripcion": f"  {descripcion}  " if random.random() < 0.3 else descripcion,
             "Peso": peso,
             "Metodo de llegada": _metodo_con_errata(metodo),
+            "Largo": _dimension_aleatoria(10, 60),
+            "Ancho": _dimension_aleatoria(8, 45),
+            "Alto": _dimension_aleatoria(5, 35),
         })
         trackings_usados.append(tracking_base)
 
