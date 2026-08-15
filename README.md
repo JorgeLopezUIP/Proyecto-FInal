@@ -6,8 +6,8 @@
 
 4.Ejecutar app.py 
 
-5. Seleccionar el archivo manifiesto_miami_20_paquetes.xlsx y darle a procesar
+5.Seleccionar el archivo manifiesto_miami_20_paquetes.xlsx y darle a procesar
 
-6. Una ves visualizados los datos presionar en Transformar datos
+6.Una ves visualizados los datos presionar en Transformar datos
 
-7. Carga los datos validos a MariaDB
+7.Carga los datos validos a MariaDB

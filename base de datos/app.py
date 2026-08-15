@@ -136,7 +136,15 @@ def _ejecutar_transform(df):
     """Corre transformar_datos() sobre `df`, guarda el CSV de válidos para
     LOAD y arma la respuesta que consume transform.html. Se usa tanto desde
     /transform (primera corrida) como desde /transform/corregir (después de
-    que el usuario edita filas inválidas y pide revalidar)."""
+    que el usuario edita filas inválidas y pide revalidar).
+
+    Tambien guarda un "archivo de trabajo" con el DataFrame COMPLETO
+    (validos + invalidos, ya con las correcciones aplicadas hasta ahora).
+    Esto es clave para que las correcciones se acumulen entre rondas: si no
+    se guardara, cada ronda de /transform/corregir tendria que releer el
+    excel original sin tocar, y las filas corregidas en una ronda anterior
+    (que ya no vienen en el formulario de la ronda actual, porque pasaron a
+    validos) se sobrescribirian de vuelta con sus valores sucios originales."""
 
     resultado = transformar_datos(df)
 
@@ -146,6 +154,16 @@ def _ejecutar_transform(df):
     archivo_validos = os.path.abspath("datos/Datos_validos.csv")
     df_validos.to_csv(archivo_validos, index=False, encoding="utf-8-sig")
     session["archivo_validos"] = archivo_validos
+
+    # `df` ya viene mutado en el lugar por transformar_datos() (le agrega
+    # cedula_valida, limpia tracking/cedula/etc), y conserva TODAS las filas
+    # en su orden original -- por eso sirve para reconstruir el estado
+    # acumulado entre rondas de correccion.
+    archivo_trabajo = os.path.abspath("datos/archivo_trabajo.csv")
+    df.drop(columns=["cedula_valida"], errors="ignore").to_csv(
+        archivo_trabajo, index=False, encoding="utf-8-sig"
+    )
+    session["archivo_trabajo"] = archivo_trabajo
 
     # Los invalidos se arman como lista de registros (no HTML fijo) para
     # poder mostrarlos como formulario editable en la plantilla, con el
@@ -159,6 +177,9 @@ def _ejecutar_transform(df):
             "cliente": fila["cliente"],
             "descripcion": fila["descripcion"],
             "peso": "" if pd.isna(fila["peso"]) else fila["peso"],
+            "largo": "" if pd.isna(fila["largo"]) else fila["largo"],
+            "ancho": "" if pd.isna(fila["ancho"]) else fila["ancho"],
+            "alto": "" if pd.isna(fila["alto"]) else fila["alto"],
             "metodo": fila["metodo de llegada"],
             "motivo": fila["motivo"],
         })
@@ -171,6 +192,7 @@ def _ejecutar_transform(df):
         duplicados=resultado["duplicados"],
         cedulas_invalidas=resultado["cedulas_invalidas"],
         pesos_invalidos=resultado["pesos_invalidos"],
+        dimensiones_invalidas=resultado["dimensiones_invalidas"],
         tabla_validos=df_validos.to_html(classes="tabla", index=False),
         invalidos_registros=invalidos_registros,
     )
@@ -191,6 +213,9 @@ def transform():
 
     try:
         # Pandas transforma el Excel en un DataFrame para poder manipularlo y graficarlo en la consola
+        # Esta es siempre la primera corrida (viene de Extract), asi que se
+        # parte del excel original -- cualquier archivo de trabajo de un
+        # lote anterior ya no aplica (se pisa al llamar _ejecutar_transform).
         df = pd.read_excel(archivo)
         return _ejecutar_transform(df)
 
@@ -205,33 +230,43 @@ def transform():
 
 @app.route("/transform/corregir", methods=["POST"])
 def transform_corregir():
-    """Recibe las filas invalidas editadas desde la GUI, las aplica sobre el
-    archivo original y vuelve a correr todo el Transform (asi los
-    duplicados, categorias, etc. se recalculan sobre el conjunto completo)."""
+    """Recibe las filas invalidas editadas desde la GUI y las aplica sobre
+    el archivo de TRABAJO (no sobre el excel original), para que las
+    correcciones de rondas anteriores no se pierdan. Luego vuelve a correr
+    todo el Transform sobre el conjunto completo (asi los duplicados,
+    categorias, etc. se recalculan bien)."""
 
-    archivo = session.get("archivo_original")
-
-    if not archivo or not os.path.exists(archivo):
-        return error_page(
-            "SIN EXTRACT",
-            "No hay ningún archivo extraído",
-            "Primero debes realizar Extract antes de continuar con Transform.",
-        )
+    archivo_trabajo = session.get("archivo_trabajo")
+    archivo_original = session.get("archivo_original")
 
     try:
-        df = pd.read_excel(archivo)
+        if archivo_trabajo and os.path.exists(archivo_trabajo):
+            # Ya hay una ronda de correcciones previa: seguimos sobre eso.
+            df = pd.read_csv(archivo_trabajo, encoding="utf-8-sig")
+        elif archivo_original and os.path.exists(archivo_original):
+            # Primera vez que se corrige: todavia no existe archivo de
+            # trabajo, partimos del excel original.
+            df = pd.read_excel(archivo_original)
+        else:
+            return error_page(
+                "SIN EXTRACT",
+                "No hay ningún archivo extraído",
+                "Primero debes realizar Extract antes de continuar con Transform.",
+            )
 
         # Estandarizamos nombres de columna igual que transformar_datos()
-        # para poder ubicar las columnas editables sin importar como venian
-        # tituladas en el excel original.
+        # (no-op si ya vienen estandarizadas, como al leer el csv de trabajo).
         df.columns = (
             df.columns.astype(str).str.strip().str.lower().str.replace("-", "", regex=False)
         )
 
-        # Se pasa "peso" a tipo object antes de editar: si la columna quedo
-        # tipada como float64, pandas rechaza asignarle un string (ej. "5.0"
-        # o un valor invalido a proposito como "N/A") con .at[].
+        # Se pasan a tipo object antes de editar: si una columna quedo tipada
+        # como float64, pandas rechaza asignarle un string (ej. "5.0" o un
+        # valor invalido a proposito como "N/A") con .at[].
         df["peso"] = df["peso"].astype(object)
+        df["largo"] = df["largo"].astype(object)
+        df["ancho"] = df["ancho"].astype(object)
+        df["alto"] = df["alto"].astype(object)
 
         idxs = request.form.getlist("idx")
         trackings = request.form.getlist("tracking")
@@ -239,6 +274,9 @@ def transform_corregir():
         clientes = request.form.getlist("cliente")
         descripciones = request.form.getlist("descripcion")
         pesos = request.form.getlist("peso")
+        largos = request.form.getlist("largo")
+        anchos = request.form.getlist("ancho")
+        altos = request.form.getlist("alto")
         metodos = request.form.getlist("metodo")
 
         for i, idx_str in enumerate(idxs):
@@ -253,6 +291,9 @@ def transform_corregir():
             df.at[idx, "cliente"] = clientes[i]
             df.at[idx, "descripcion"] = descripciones[i]
             df.at[idx, "peso"] = pesos[i]
+            df.at[idx, "largo"] = largos[i]
+            df.at[idx, "ancho"] = anchos[i]
+            df.at[idx, "alto"] = altos[i]
             df.at[idx, "metodo de llegada"] = metodos[i]
 
         return _ejecutar_transform(df)
@@ -350,6 +391,8 @@ def api_listar_paquetes():
         sql += " AND p.metodo_de_llegada = %s"
         params.append(metodo)
 
+    # orden viene validado contra una lista fija (asc/desc), nunca se
+    # concatena texto libre del usuario en el ORDER BY.
     sql += f" ORDER BY p.fecha_de_recepcion {orden.upper()} LIMIT 300"
 
     try:
@@ -597,6 +640,68 @@ def api_notificar_paquete(id_paquete):
             fila["cliente_nombre"], fila["cliente_correo"], fila["tracking"], fila["estado"]
         )
         return jsonify({"enviado": enviado, "mensaje": msg})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/paquetes/<int:id_paquete>", methods=["DELETE"])
+def api_eliminar_paquete(id_paquete):
+    """Elimina un paquete individual. Primero borra sus filas dependientes
+    (tracking_eventos, envio_paquete) porque tienen FOREIGN KEY hacia
+    paquetes sin ON DELETE CASCADE -- si no se borran antes, MariaDB
+    rechaza el DELETE de paquetes por violacion de llave foranea."""
+
+    try:
+        conexion = obtener_conexion()
+        try:
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT id FROM paquetes WHERE id = %s", (id_paquete,))
+                if not cursor.fetchone():
+                    return jsonify({"error": "Paquete no encontrado"}), 404
+
+                cursor.execute("DELETE FROM envio_paquete WHERE id_paquete = %s", (id_paquete,))
+                cursor.execute("DELETE FROM tracking_eventos WHERE id_paquete = %s", (id_paquete,))
+                cursor.execute("DELETE FROM paquetes WHERE id = %s", (id_paquete,))
+
+            conexion.commit()
+        except Exception:
+            conexion.rollback()
+            raise
+        finally:
+            conexion.close()
+
+        return jsonify({"ok": True})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/paquetes", methods=["DELETE"])
+def api_eliminar_todos_paquetes():
+    """Elimina TODOS los paquetes de la base de datos (y sus filas
+    dependientes). Accion destructiva pensada para limpiar datos de
+    prueba -- la confirmacion se hace del lado del cliente (GUI)."""
+
+    try:
+        conexion = obtener_conexion()
+        try:
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT COUNT(*) AS total FROM paquetes")
+                total = cursor.fetchone()["total"]
+
+                cursor.execute("DELETE FROM envio_paquete")
+                cursor.execute("DELETE FROM tracking_eventos")
+                cursor.execute("DELETE FROM paquetes")
+
+            conexion.commit()
+        except Exception:
+            conexion.rollback()
+            raise
+        finally:
+            conexion.close()
+
+        return jsonify({"ok": True, "eliminados": total})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

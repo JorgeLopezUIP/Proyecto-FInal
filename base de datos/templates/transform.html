@@ -35,6 +35,11 @@
     <div class="wb-value">{{ pesos_invalidos }}</div>
     <div class="wb-barcode"></div>
   </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Dimensión inválida</div>
+    <div class="wb-value">{{ dimensiones_invalidas }}</div>
+    <div class="wb-barcode"></div>
+  </div>
 </div>
 
 <div class="panel">
@@ -67,6 +72,9 @@
               <th>Cliente</th>
               <th>Descripción</th>
               <th>Peso</th>
+              <th>Largo</th>
+              <th>Ancho</th>
+              <th>Alto</th>
               <th>Método</th>
               <th>Motivo</th>
             </tr>
@@ -82,6 +90,9 @@
               <td><input type="text" name="cliente" value="{{ r.cliente }}"></td>
               <td><input type="text" name="descripcion" value="{{ r.descripcion }}"></td>
               <td><input type="text" name="peso" value="{{ r.peso }}" class="col-num"></td>
+              <td><input type="text" name="largo" value="{{ r.largo }}" class="col-num"></td>
+              <td><input type="text" name="ancho" value="{{ r.ancho }}" class="col-num"></td>
+              <td><input type="text" name="alto" value="{{ r.alto }}" class="col-num"></td>
               <td><input type="text" name="metodo" value="{{ r.metodo }}"></td>
               <td class="col-motivo">{{ r.motivo }}</td>
             </tr>
