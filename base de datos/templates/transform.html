@@ -55,9 +55,54 @@
 
   <div class="table-section">
     <h3><span class="dot bad"></span>Registros inválidos ({{ invalidos }})</h3>
-    <div class="table-wrap">
-      {{ tabla_invalidos | safe }}
-    </div>
+
+    {% if invalidos_registros %}
+    <form action="/transform/corregir" method="post">
+      <div class="table-wrap">
+        <table class="tabla tabla-editable">
+          <thead>
+            <tr>
+              <th>Tracking</th>
+              <th>Cédula</th>
+              <th>Cliente</th>
+              <th>Descripción</th>
+              <th>Peso</th>
+              <th>Método</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in invalidos_registros %}
+            <tr>
+              <td>
+                <input type="hidden" name="idx" value="{{ r.idx }}">
+                <input type="text" name="tracking" value="{{ r.tracking }}">
+              </td>
+              <td><input type="text" name="cedula" value="{{ r.cedula }}"></td>
+              <td><input type="text" name="cliente" value="{{ r.cliente }}"></td>
+              <td><input type="text" name="descripcion" value="{{ r.descripcion }}"></td>
+              <td><input type="text" name="peso" value="{{ r.peso }}" class="col-num"></td>
+              <td><input type="text" name="metodo" value="{{ r.metodo }}"></td>
+              <td class="col-motivo">{{ r.motivo }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions-row" style="margin-top:14px;">
+        <span class="meta" style="align-self:center;">Corrige los campos y vuelve a validar</span>
+        <button type="submit" class="btn btn-ghost">
+          Revalidar corregidos
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <div class="empty-hint">No hay registros inválidos en este lote.</div>
+    {% endif %}
   </div>
 
   <div class="actions-row">

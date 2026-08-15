@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Paquetes · Manifiesto ETL{% endblock %}
+
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Consulta y edición</p>
+      <h2>Paquetes en bodega</h2>
+    </div>
+    <div class="meta" id="contador-resultados">— resultados</div>
+  </div>
+
+  <div class="filtros">
+    <input type="text" id="f-buscar" placeholder="Buscar por tracking o cliente…">
+    <select id="f-estado">
+      <option value="">Todos los estados</option>
+      <option value="recibido en bodega">Recibido en bodega</option>
+      <option value="en transito">En tránsito</option>
+      <option value="en aduana">En aduana</option>
+      <option value="listo para retiro">Listo para retiro</option>
+    </select>
+    <select id="f-metodo">
+      <option value="">Todos los métodos</option>
+      <option value="aereo">Aéreo</option>
+      <option value="maritimo">Marítimo</option>
+      <option value="terrestre">Terrestre</option>
+    </select>
+    <button class="btn" id="btn-buscar" type="button">Buscar</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="tabla" id="tabla-paquetes">
+      <thead>
+        <tr>
+          <th>Tracking</th><th>Cliente</th><th>Categoría</th><th>Peso</th>
+          <th>Método</th><th>Estado</th><th>Recepción</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-paquetes-body"></tbody>
+    </table>
+  </div>
+
+  <div class="empty-hint" id="empty-hint" style="display:none;">
+    No se encontraron paquetes con esos filtros.
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="panel-detalle" id="panel-detalle">
+  <div class="pd-head">
+    <div>
+      <h3 id="pd-tracking">—</h3>
+      <div class="pd-sub" id="pd-recepcion">—</div>
+    </div>
+    <button class="pd-close" id="pd-close" type="button">✕</button>
+  </div>
+
+  <div class="pd-section">
+    <h4>Cliente</h4>
+    <div class="pd-readonly">
+      <div><span class="k">Nombre</span><span class="v" id="pd-cliente-nombre">—</span></div>
+      <div><span class="k">Cédula / Pasaporte</span><span class="v" id="pd-cliente-cedula">—</span></div>
+      <div><span class="k">Categoría</span><span class="v" id="pd-categoria">—</span></div>
+    </div>
+  </div>
+
+  <div class="pd-section">
+    <h4>Tarifa aplicable (según zona del cliente)</h4>
+    <div class="tarifa-box">
+      <div>
+        <div class="zona" id="pd-zona">Zona no disponible</div>
+        <div class="precio" id="pd-tarifa">—</div>
+      </div>
+      <div class="zona" id="pd-tarifa-tipo"></div>
+    </div>
+  </div>
+
+  <div class="pd-section">
+    <h4>Editar paquete</h4>
+    <form id="form-editar">
+      <div class="field-grid">
+        <div>
+          <label for="d-peso">Peso (kg)</label>
+          <input type="number" step="0.01" id="d-peso">
+        </div>
+        <div>
+          <label for="d-metodo">Método de llegada</label>
+          <select id="d-metodo">
+            <option value="aereo">Aéreo</option>
+            <option value="maritimo">Marítimo</option>
+            <option value="terrestre">Terrestre</option>
+          </select>
+        </div>
+        <div>
+          <label for="d-largo">Largo (cm)</label>
+          <input type="number" step="0.01" id="d-largo">
+        </div>
+        <div>
+          <label for="d-ancho">Ancho (cm)</label>
+          <input type="number" step="0.01" id="d-ancho">
+        </div>
+        <div>
+          <label for="d-alto">Alto (cm)</label>
+          <input type="number" step="0.01" id="d-alto">
+        </div>
+        <div>
+          <label for="d-estado">Estado</label>
+          <select id="d-estado">
+            <option value="recibido en bodega">Recibido en bodega</option>
+            <option value="en transito">En tránsito</option>
+            <option value="en aduana">En aduana</option>
+            <option value="listo para retiro">Listo para retiro</option>
+          </select>
+        </div>
+        <div class="full">
+          <label for="d-descripcion">Descripción</label>
+          <textarea id="d-descripcion"></textarea>
+        </div>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="d-notificar" checked>
+        Notificar al cliente por correo si cambia el estado
+      </label>
+
+      <div class="pd-actions">
+        <button type="submit" class="btn">Guardar cambios</button>
+        <button type="button" class="btn btn-ghost" id="btn-reenviar">Reenviar notificación</button>
+      </div>
+
+      <div class="email-status" id="email-status"></div>
+    </form>
+  </div>
+
+  <div class="pd-section">
+    <h4>Historial de tracking</h4>
+    <div class="log" id="pd-eventos"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/paquetes.js') }}"></script>
+
+{% endblock %}

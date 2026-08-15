@@ -114,6 +114,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS envio_paquete (
 cursor.execute("""CREATE TABLE IF NOT EXISTS zonas (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL UNIQUE,
+    tarifa DECIMAL(10,2) NOT NULL,
     descripcion VARCHAR(255)
 ); """)
 

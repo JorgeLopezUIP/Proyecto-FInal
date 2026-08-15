@@ -108,6 +108,26 @@ def transformar_datos(df):
     df_validos["categoria"] = df_validos["descripcion"].apply(clasificar_producto) #Se inserta categoria en la tabla
     df_validos["tarifa_preliminar"] = df_validos["peso"].apply(calcular_tarifa) #Se inserta la tarifa en la tabla
 
+    # Motivo por el que cada fila cayó en invalidos -- sin esto, filas que a
+    # simple vista se ven bien (ej. cedula y peso correctos) parecen invalidas
+    # "sin razon" cuando en realidad el motivo es un tracking duplicado que
+    # no se nota porque la otra copia tiene un formato distinto (mayus/guion).
+    motivos = []
+    for i in df_invalidos.index:
+        razones = []
+        if duplicados.loc[i]:
+            razones.append("tracking duplicado")
+        if not df.loc[i, "cedula_valida"]:
+            razones.append("cedula con formato invalido")
+        peso_val = df.loc[i, "peso"]
+        if pd.isna(peso_val):
+            razones.append("peso no numerico o vacio")
+        elif peso_val <= 0:
+            razones.append("peso debe ser mayor a 0")
+        motivos.append("; ".join(razones) if razones else "motivo no identificado")
+
+    df_invalidos["motivo"] = motivos
+
     df_validos = df_validos.drop(columns=["cedula_valida"])
 
     df_invalidos = df_invalidos.drop(columns=["cedula_valida"])

@@ -1,6 +1,7 @@
 import pandas as pd
 import pymysql
 from conexion import obtener_conexion
+from correo import notificar_cambio_estado
 
 
 METODOS_VALIDOS = {"aereo", "maritimo", "terrestre"}
@@ -9,8 +10,15 @@ METODOS_VALIDOS = {"aereo", "maritimo", "terrestre"}
 def _cargar_referencias(cursor):
     """Precarga clientes, categorias y bodega para no consultar la BD fila por fila."""
 
-    cursor.execute("SELECT id, cedula_pasaporte FROM clientes")
-    clientes = {row["cedula_pasaporte"]: row["id"] for row in cursor.fetchall()}
+    cursor.execute("SELECT id, cedula_pasaporte, nombre, correo FROM clientes")
+    clientes = {
+        row["cedula_pasaporte"]: {
+            "id": row["id"],
+            "nombre": row["nombre"],
+            "correo": row["correo"],
+        }
+        for row in cursor.fetchall()
+    }
 
     cursor.execute("SELECT id, nombre FROM categoria_productos")
     categorias = {row["nombre"]: row["id"] for row in cursor.fetchall()}
@@ -55,8 +63,8 @@ def cargar_datos(archivo_csv):
                 try:
                     # Cliente: el paquete solo puede insertarse si ya existe
                     # un cliente con esa cedula (paquetes.id_cliente es FK).
-                    id_cliente = clientes.get(fila["cedula"])
-                    if id_cliente is None:
+                    cliente = clientes.get(fila["cedula"])
+                    if cliente is None:
                         omitidos += 1
                         mensajes.append(
                             f"OMITIDO {tracking}: cliente con cedula "
@@ -76,7 +84,8 @@ def cargar_datos(archivo_csv):
                         continue
 
                     # metodo_de_llegada es ENUM en minusculas; Transform_flask
-                    # lo deja en mayusculas, asi que se normaliza aqui.
+                    # solo hace strip(), asi que la mayuscula/minuscula se
+                    # normaliza aqui antes de insertar.
                     metodo = str(fila.get("metodo de llegada", "")).strip().lower()
                     if metodo not in METODOS_VALIDOS:
                         omitidos += 1
@@ -95,7 +104,7 @@ def cargar_datos(archivo_csv):
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         """,
                         (
-                            id_cliente,
+                            cliente["id"],
                             id_bodega,
                             id_categoria,
                             fila["descripcion"],   # no hay columna "nombre" separada en el CSV
@@ -123,6 +132,17 @@ def cargar_datos(archivo_csv):
 
                     insertados += 1
                     mensajes.append(f"OK  {tracking} \u00b7 {fila['cliente']} insertado")
+
+                    # Notificacion por correo: el paquete recien insertado
+                    # queda en estado 'recibido en bodega', que es uno de
+                    # los tres estados que se notifican al cliente.
+                    enviado, msg_correo = notificar_cambio_estado(
+                        cliente["nombre"], cliente["correo"], tracking, "recibido en bodega"
+                    )
+                    mensajes.append(
+                        f"EMAIL {tracking}: {msg_correo}" if enviado
+                        else f"EMAIL {tracking}: no enviado ({msg_correo})"
+                    )
 
                 except pymysql.err.IntegrityError:
                     # tracking (u otra columna UNIQUE) ya existe.
