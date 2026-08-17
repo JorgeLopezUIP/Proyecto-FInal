@@ -5,7 +5,7 @@ const obtenerTracking = async (req, res, next) => {
     const { tracking } = req.params;
 
     const paquete = await Paquete.findOne({
-      where: { numero_tracking: tracking }
+      where: { tracking }
     });
 
     if (!paquete) {
@@ -19,6 +19,7 @@ const obtenerTracking = async (req, res, next) => {
       exito: true,
       datos: paquete
     });
+
   } catch (error) {
     next(error);
   }

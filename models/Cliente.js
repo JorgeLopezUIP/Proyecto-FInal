@@ -7,22 +7,27 @@ const Cliente = sequelize.define('Cliente', {
     primaryKey: true,
     autoIncrement: true
   },
-  casillero: {
-    type: DataTypes.STRING(20),
-    allowNull: false,
-    unique: true
-  },
+
   nombre: {
-    type: DataTypes.STRING(100),
+    type: DataTypes.STRING(255),
     allowNull: false
   },
-  email: {
-    type: DataTypes.STRING(100),
-    allowNull: false
+
+  cedula_pasaporte: {
+    type: DataTypes.STRING(50),
+    allowNull: true
   },
+
+  correo: {
+    type: DataTypes.STRING(255),
+    allowNull: true
+  },
+
   telefono: {
-    type: DataTypes.STRING(20)
+    type: DataTypes.STRING(20),
+    allowNull: true
   }
+
 }, {
   tableName: 'clientes',
   timestamps: false
