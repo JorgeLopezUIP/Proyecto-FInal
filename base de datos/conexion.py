@@ -2,7 +2,7 @@ import pymysql
 
 def obtener_conexion():
     return  pymysql.connect(
-    host= "127.0.0.1",
+    host= "localhost",
     port=3307,
     user="root",
     password="root123",
