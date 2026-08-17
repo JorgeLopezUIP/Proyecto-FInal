@@ -9,7 +9,10 @@
       <p class="eyebrow">Consulta y edición</p>
       <h2>Paquetes en bodega</h2>
     </div>
-    <div class="meta" id="contador-resultados">— resultados</div>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div class="meta" id="contador-resultados">— resultados</div>
+      <button class="btn btn-danger" id="btn-eliminar-todos" type="button">Eliminar todos</button>
+    </div>
   </div>
 
   <div class="filtros">
@@ -27,13 +30,12 @@
       <option value="maritimo">Marítimo</option>
       <option value="terrestre">Terrestre</option>
     </select>
+    <select id="f-orden">
+      <option value="desc">Recepción: más nuevo primero</option>
+      <option value="asc">Recepción: más viejo primero</option>
+    </select>
     <button class="btn" id="btn-buscar" type="button">Buscar</button>
   </div>
-  <!-- templates/paquetes.html — junto a los demás <select> de filtros -->
-  <select id="f-orden">
-    <option value="desc">Recepción: más nuevo primero</option>
-    <option value="asc">Recepción: más viejo primero</option>
-  </select>
 
   <div class="table-wrap">
     <table class="tabla" id="tabla-paquetes">
@@ -72,7 +74,6 @@
     </div>
   </div>
 
-    <!-- templates/paquetes.html — se agregó esta sección completa -->
   <div class="pd-section">
     <h4>Dimensiones</h4>
     <div class="pd-readonly">
@@ -92,7 +93,6 @@
       <div class="zona" id="pd-tarifa-tipo"></div>
     </div>
   </div>
-  
 
   <div class="pd-section">
     <h4>Editar paquete</h4>
@@ -149,6 +149,10 @@
 
       <div class="email-status" id="email-status"></div>
     </form>
+
+    <div class="pd-actions" style="margin-top:14px;">
+      <button type="button" class="btn btn-danger" id="btn-eliminar-paquete">Eliminar este paquete</button>
+    </div>
   </div>
 
   <div class="pd-section">

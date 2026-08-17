@@ -28,10 +28,10 @@
     const q = document.getElementById("f-buscar").value.trim();
     const estado = document.getElementById("f-estado").value;
     const metodo = document.getElementById("f-metodo").value;
+    const orden = document.getElementById("f-orden").value;
     if (q) params.set("q", q);
     if (estado) params.set("estado", estado);
     if (metodo) params.set("metodo", metodo);
-    const orden = document.getElementById("f-orden").value;
     if (orden) params.set("orden", orden);
 
     const cuerpoTabla = document.getElementById("tabla-paquetes-body");
@@ -91,9 +91,7 @@
     document.getElementById("pd-cliente-nombre").textContent = data.paquete.cliente_nombre;
     document.getElementById("pd-cliente-cedula").textContent = data.paquete.cedula_pasaporte;
     document.getElementById("pd-categoria").textContent = data.paquete.categoria || "—";
-    document.getElementById("f-orden").addEventListener("change", buscar);
 
-    // static/js/paquetes.js — dentro de abrirDetalle(), justo después de pd-categoria
     const fmtDim = (v) => (v === null || v === undefined || v === "") ? "No registrado" : `${v} cm`;
     document.getElementById("pd-largo").textContent = fmtDim(data.paquete.largo);
     document.getElementById("pd-ancho").textContent = fmtDim(data.paquete.ancho);
@@ -199,8 +197,6 @@
 
     buscar();
   }
-  
-  
 
   async function reenviarNotificacion() {
     if (!state.paqueteActual) return;
@@ -214,7 +210,49 @@
     mostrarEmailStatus(data.enviado, data.mensaje);
   }
 
+  async function eliminarPaquete() {
+    if (!state.paqueteActual) return;
+
+    const tracking = state.paqueteActual.tracking;
+    const confirmado = confirm(
+      `¿Eliminar el paquete ${tracking}? Esta acción no se puede deshacer ` +
+      `(también se borra su historial de tracking).`
+    );
+    if (!confirmado) return;
+
+    const res = await fetch(`/api/paquetes/${state.paqueteActual.id}`, { method: "DELETE" });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "No se pudo eliminar el paquete");
+      return;
+    }
+
+    cerrarDetalle();
+    buscar();
+  }
+
+  async function eliminarTodosLosPaquetes() {
+    const confirmado = confirm(
+      "¿Eliminar TODOS los paquetes de la base de datos? Esta acción no se " +
+      "puede deshacer y borra también todo el historial de tracking."
+    );
+    if (!confirmado) return;
+
+    const res = await fetch("/api/paquetes", { method: "DELETE" });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "No se pudieron eliminar los paquetes");
+      return;
+    }
+
+    cerrarDetalle();
+    buscar();
+  }
+
   document.getElementById("btn-buscar").addEventListener("click", buscar);
+  document.getElementById("f-orden").addEventListener("change", buscar);
   document.getElementById("f-buscar").addEventListener("keydown", (e) => {
     if (e.key === "Enter") buscar();
   });
@@ -222,6 +260,8 @@
   document.getElementById("overlay").addEventListener("click", cerrarDetalle);
   document.getElementById("form-editar").addEventListener("submit", guardarCambios);
   document.getElementById("btn-reenviar").addEventListener("click", reenviarNotificacion);
+  document.getElementById("btn-eliminar-paquete").addEventListener("click", eliminarPaquete);
+  document.getElementById("btn-eliminar-todos").addEventListener("click", eliminarTodosLosPaquetes);
 
   buscar();
 })();

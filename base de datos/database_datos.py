@@ -18,6 +18,14 @@ VALUES
 ('Ana Torres', '8-100-1009', 'ana.torres@email.com', '6000-1010');
  """)
 
+cursor.execute("""INSERT INTO zonas
+(nombre, descripcion, tarifa)
+VALUES
+('Zona 1', '0 a 5 km - San Francisco, Paitilla, Obarrio, El Cangrejo y Via España', 4.00),
+('Zona 2', '5 a 10 km - Bella Vista, Costa del Este, El Dorado, Parque Lefevre y Rio Abajo', 5.00),
+('Zona 3', '10 a 15 km - Brisas del Golf, Clayton, Los Pueblos, Villa Lucre y Santa Maria', 8.00),
+('Zona 4', '15 a 20 km - Costa Sur, Versalles, Don Bosco, Las Cumbres y San Antonio', 10.00)
+;""")
 
 cursor.execute("""INSERT INTO casilleros
 (id_cliente,id_zona, codigo, direccion)
@@ -108,14 +116,7 @@ VALUES
 ('Calzado', 'Productos de calzado'),
 ('Otros', 'Productos que no pertenecen a otra categoría');""")
 
-cursor.execute("""INSERT INTO zonas
-(nombre, descripcion, tarifa)
-VALUES
-('Zona 1', '0 a 5 km - San Francisco, Paitilla, Obarrio, El Cangrejo y Via España', 4.00),
-('Zona 2', '5 a 10 km - Bella Vista, Costa del Este, El Dorado, Parque Lefevre y Rio Abajo', 5.00),
-('Zona 3', '10 a 15 km - Brisas del Golf, Clayton, Los Pueblos, Villa Lucre y Santa Maria', 8.00),
-('Zona 4', '15 a 20 km - Costa Sur, Versalles, Don Bosco, Las Cumbres y San Antonio', 10.00)
-;""")
+
 
 conexion.commit()
 cursor.close()
