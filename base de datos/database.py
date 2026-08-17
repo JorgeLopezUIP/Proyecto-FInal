@@ -111,12 +111,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS envio_paquete (
     FOREIGN KEY (id_paquete) REFERENCES paquetes(id)
 ); """)
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS zonas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL UNIQUE,
-    tarifa DECIMAL(10,2) NOT NULL,
-    descripcion VARCHAR(255)
-); """)
+
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS tarifas (
     id INT PRIMARY KEY AUTO_INCREMENT,
