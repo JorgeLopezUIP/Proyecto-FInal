@@ -360,6 +360,61 @@ def paquetes():
     return render_template("paquetes.html")
 
 
+@app.route("/paquetes/nuevo", methods=["GET", "POST"])
+def paquete_nuevo():
+    """Alta manual de un paquete individual desde la GUI. Reutiliza
+    transformar_datos() (misma validacion/limpieza que el ETL masivo) y
+    cargar_datos() (mismo INSERT + tracking_eventos + notificacion por
+    correo que usa Load) para que un paquete cargado a mano se comporte
+    exactamente igual que uno que llego por Excel."""
+
+    if request.method == "GET":
+        return render_template("agregar.html")
+
+    campos = {
+        "tracking": request.form.get("tracking", "").strip(),
+        "cedula": request.form.get("cedula", "").strip(),
+        "cliente": request.form.get("cliente", "").strip(),
+        "descripcion": request.form.get("descripcion", "").strip(),
+        "peso": request.form.get("peso", "").strip(),
+        "metodo de llegada": request.form.get("metodo", "").strip(),
+        "largo": request.form.get("largo", "").strip(),
+        "ancho": request.form.get("ancho", "").strip(),
+        "alto": request.form.get("alto", "").strip(),
+    }
+
+    try:
+        df = pd.DataFrame([campos])
+        resultado = transformar_datos(df)
+
+        if len(resultado["invalidos"]) > 0:
+            motivo = resultado["invalidos"].iloc[0]["motivo"]
+            return render_template(
+                "agregar.html",
+                error_motivo=motivo,
+                valores=campos,
+            )
+
+        # Es valido: se manda por el mismo camino que Load (INSERT +
+        # tracking_eventos + notificacion por correo) reutilizando
+        # cargar_datos(), asi no se duplica esa logica ni se puede
+        # desincronizar del comportamiento del ETL masivo.
+        os.makedirs("datos", exist_ok=True)
+        archivo_temp = os.path.abspath("datos/paquete_individual.csv")
+        resultado["validos"].to_csv(archivo_temp, index=False, encoding="utf-8-sig")
+
+        resultado_carga = cargar_datos(archivo_temp)
+
+        return render_template("agregar.html", resultado_carga=resultado_carga)
+
+    except Exception as e:
+        return render_template(
+            "agregar.html",
+            error_general=str(e),
+            valores=campos,
+        )
+
+
 @app.route("/api/paquetes")
 def api_listar_paquetes():
 

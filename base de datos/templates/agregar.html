@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Agregar paquete · Manifiesto ETL{% endblock %}
+
+{% block content %}
+
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Alta manual</p>
+      <h2>Agregar paquete individual</h2>
+    </div>
+    <a href="/paquetes" class="btn btn-ghost" style="text-decoration:none;">Volver a Paquetes</a>
+  </div>
+
+  {% if resultado_carga %}
+
+    <div class="waybill-row">
+      <div class="waybill tone-ok">
+        <div class="wb-label">Insertados</div>
+        <div class="wb-value">{{ resultado_carga.insertados }}</div>
+        <div class="wb-barcode"></div>
+      </div>
+      <div class="waybill tone-warn">
+        <div class="wb-label">Omitidos</div>
+        <div class="wb-value">{{ resultado_carga.omitidos }}</div>
+        <div class="wb-barcode"></div>
+      </div>
+      <div class="waybill tone-bad">
+        <div class="wb-label">Errores</div>
+        <div class="wb-value">{{ resultado_carga.errores }}</div>
+        <div class="wb-barcode"></div>
+      </div>
+    </div>
+
+    <div class="log">
+      {% for m in resultado_carga.mensajes %}
+        <div class="log-line"><span>{{ m }}</span></div>
+      {% else %}
+        <div class="log-line"><span>No se generaron mensajes.</span></div>
+      {% endfor %}
+    </div>
+
+    <div class="actions-row">
+      <a href="/paquetes" class="btn btn-ghost">Ver en Paquetes</a>
+      <a href="/paquetes/nuevo" class="btn">Agregar otro paquete</a>
+    </div>
+
+  {% else %}
+
+    {% if error_motivo %}
+    <div class="email-status fail" style="display:block; margin-bottom:20px;">
+      No se pudo agregar el paquete: {{ error_motivo }}
+    </div>
+    {% endif %}
+
+    {% if error_general %}
+    <div class="email-status fail" style="display:block; margin-bottom:20px;">
+      Error: {{ error_general }}
+    </div>
+    {% endif %}
+
+    <form action="/paquetes/nuevo" method="post">
+      <div class="field-grid">
+        <div>
+          <label for="tracking">Tracking</label>
+          <input type="text" id="tracking" name="tracking" value="{{ valores.tracking if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="cedula">Cédula / Pasaporte del cliente</label>
+          <input type="text" id="cedula" name="cedula" value="{{ valores.cedula if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="cliente">Nombre del cliente</label>
+          <input type="text" id="cliente" name="cliente" value="{{ valores.cliente if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="metodo">Método de llegada</label>
+          <select id="metodo" name="metodo">
+            <option value="aereo" {{ 'selected' if valores and valores.get('metodo de llegada') == 'aereo' else '' }}>Aéreo</option>
+            <option value="maritimo" {{ 'selected' if valores and valores.get('metodo de llegada') == 'maritimo' else '' }}>Marítimo</option>
+            <option value="terrestre" {{ 'selected' if valores and valores.get('metodo de llegada') == 'terrestre' else '' }}>Terrestre</option>
+          </select>
+        </div>
+        <div>
+          <label for="peso">Peso (kg)</label>
+          <input type="text" id="peso" name="peso" value="{{ valores.peso if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="largo">Largo (cm)</label>
+          <input type="text" id="largo" name="largo" value="{{ valores.largo if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="ancho">Ancho (cm)</label>
+          <input type="text" id="ancho" name="ancho" value="{{ valores.ancho if valores else '' }}" required>
+        </div>
+        <div>
+          <label for="alto">Alto (cm)</label>
+          <input type="text" id="alto" name="alto" value="{{ valores.alto if valores else '' }}" required>
+        </div>
+        <div class="full">
+          <label for="descripcion">Descripción del producto</label>
+          <textarea id="descripcion" name="descripcion" required>{{ valores.descripcion if valores else '' }}</textarea>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="submit" class="btn">
+          Validar y guardar
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+  {% endif %}
+
+</div>
+
+{% endblock %}
