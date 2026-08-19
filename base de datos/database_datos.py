@@ -18,39 +18,81 @@ VALUES
 ('Ana Torres', '8-100-1009', 'ana.torres@email.com', '6000-1010');
  """)
 
+cursor.execute("""INSERT INTO zonas
+(nombre, descripcion, tarifa)
+VALUES
+('Zona 1', '0 a 5 km - San Francisco, Paitilla, Obarrio, El Cangrejo y Via España', 4.00),
+('Zona 2', '5 a 10 km - Bella Vista, Costa del Este, El Dorado, Parque Lefevre y Rio Abajo', 5.00),
+('Zona 3', '10 a 15 km - Brisas del Golf, Clayton, Los Pueblos, Villa Lucre y Santa Maria', 8.00),
+('Zona 4', '15 a 20 km - Costa Sur, Versalles, Don Bosco, Las Cumbres y San Antonio', 10.00)
+;""")
 
 cursor.execute("""INSERT INTO casilleros
-(id_cliente, codigo, direccion)
+(id_cliente,id_zona, codigo, direccion)
 VALUES
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1000'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 1'),
     'MIA-JP001',
-    'Miami, Florida'
+    'Paitilla, Panama'
 ),
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1001'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 1'),
     'MIA-AL002',
-    'Miami, Florida'
+    'Obarrio, Panama'
 ),
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1002'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 2'),
     'MIA-CD003',
-    'Miami, Florida'
+    'Bella Vista, Panama'
 ),
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1003'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 3'),
     'MIA-MG004',
-    'Miami, Florida'
+    'Clayton, Panama'
 ),
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1004'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 4'),
     'MIA-PR005',
-    'Miami, Florida'
+    'Don Bosco, Panama'
 ),
 (
     (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1005'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 4'),
     'MIA-LM006',
-    'Miami, Florida'
+    'Costa Sur, Panama'
+),
+
+(
+    (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1006'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 3'),
+    'MIA-LM007',
+    'Santa Maria, Panama'
+),
+
+(
+    (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1007'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 3'),
+    'MIA-LM008',
+    'Villa Lucre, Panama'
+),
+
+(
+    (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1008'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 1'),
+    'MIA-LM009',
+    'Punta Pacifica, Panama'
+),
+
+(
+    (SELECT id FROM clientes WHERE cedula_pasaporte = '8-100-1009'),
+    (SELECT id FROM zonas WHERE nombre = 'Zona 1'),
+    'MIA-LM010',
+    'El Cangrejo, Panama'
 );""")
 
 
@@ -73,6 +115,8 @@ VALUES
 ('Accesorios', 'Accesorios para diferentes productos'),
 ('Calzado', 'Productos de calzado'),
 ('Otros', 'Productos que no pertenecen a otra categoría');""")
+
+
 
 conexion.commit()
 cursor.close()

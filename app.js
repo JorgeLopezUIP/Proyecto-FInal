@@ -29,9 +29,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 // Sincronizar modelos con la base de datos y levantar el servidor
-sequelize.sync({ alter: true })
+sequelize.sync()
   .then(() => {
     console.log('✅ Conexión exitosa y 📁 Tablas sincronizadas.');
+
     app.listen(PORT, () => {
       console.log(`🚀 Servidor de Panama Express corriendo en http://localhost:${PORT}`);
     });

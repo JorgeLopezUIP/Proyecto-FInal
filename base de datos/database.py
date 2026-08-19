@@ -11,6 +11,13 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS clientes (
     telefono VARCHAR(20) NOT NULL
 ); """)
 
+cursor.execute("""CREATE TABLE IF NOT EXISTS zonas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    tarifa decimal(10,2) NOT NULL
+); """)
+
 cursor.execute("""CREATE TABLE IF NOT EXISTS categoria_productos(
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nombre ENUM(
@@ -26,10 +33,12 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS categoria_productos(
 cursor.execute("""CREATE TABLE IF NOT EXISTS casilleros (
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_cliente INT NOT NULL,
+    id_zona INT NOT NULL,
     codigo VARCHAR(50) NOT NULL UNIQUE,
     direccion VARCHAR(255) NOT NULL,
 
-    FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id),
+    FOREIGN KEY (id_zona) REFERENCES zonas(id)
 ); """)
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS bodegas (
@@ -51,6 +60,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS paquetes(
     largo DECIMAL(10,2),
     ancho DECIMAL(10,2),
     alto DECIMAL(10,2),
+    metodo_de_llegada ENUM('aereo', 'maritimo', 'terrestre') NOT NULL,
     descripcion VARCHAR(255),
     
     estado ENUM(
@@ -101,11 +111,7 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS envio_paquete (
     FOREIGN KEY (id_paquete) REFERENCES paquetes(id)
 ); """)
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS zonas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL UNIQUE,
-    descripcion VARCHAR(255)
-); """)
+
 
 cursor.execute("""CREATE TABLE IF NOT EXISTS tarifas (
     id INT PRIMARY KEY AUTO_INCREMENT,

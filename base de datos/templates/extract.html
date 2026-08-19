@@ -1,109 +1,41 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Extract · Manifiesto ETL{% endblock %}
+{% set stage = 'extract' %}
 
-<html lang="es">
+{% block content %}
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Extract</title>
-
-    <style>
-
-        .tabla {
-
-            border-collapse: collapse;
-            width: 100%;
-
-        }
-
-        .tabla th,
-        .tabla td {
-
-            border: 1px solid #ccc;
-            padding: 8px;
-
-        }
-
-        .tabla th {
-
-            background-color: #eee;
-
-        }
-
-        .tabla-container {
-
-            overflow-x: auto;
-
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>EXTRACT</h1>
-
-
-    <h2>Archivo Excel recibido</h2>
-
-
-    <p>
-        Registros encontrados:
-        <strong>{{ total }}</strong>
-    </p>
-
-
-    <p>
-        Columnas:
-        <strong>{{ columnas }}</strong>
-    </p>
-
-
-    <hr>
-
-
-    <h2>Datos originales</h2>
-
-
-    <div class="tabla-container">
-
-        {{ tabla | safe }}
-
-    </div>
-
-
-    <br>
-
-
-    <!-- TRANSFORM -->
-
-    <form
-        action="/transform"
-        method="POST"
-    >
-
-        <button type="submit">
-
-            TRANSFORMAR DATOS
-
-        </button>
-
-    </form>
-
-
-    <br>
-
-
-    <a href="/">
-        Seleccionar otro archivo
-    </a>
-
+<div class="waybill-row">
+  <div class="waybill tone-total">
+    <div class="wb-label">Registros leídos</div>
+    <div class="wb-value">{{ total }}</div>
+    <div class="wb-barcode"></div>
+  </div>
 </div>
 
-</body>
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Paso 01 completado</p>
+      <h2>Vista previa del archivo</h2>
+    </div>
+    <div class="meta">{{ total }} filas</div>
+  </div>
 
-</html>
+  <div class="table-wrap">
+    {{ tabla | safe }}
+  </div>
+
+  <div class="actions-row">
+    <a href="/" class="btn btn-ghost">Cargar otro archivo</a>
+    <form action="/transform" method="post">
+      <button type="submit" class="btn">
+        Ejecutar Transform
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

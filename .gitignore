@@ -3,7 +3,7 @@ node_modules/
 
 # Variables de entorno y contraseñas
 .env
-.env.*
+
 
 # Archivos de Python / Basura de sistema
 __pycache__/

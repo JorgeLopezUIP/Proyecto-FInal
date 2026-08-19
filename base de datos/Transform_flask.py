@@ -1,4 +1,3 @@
-
 import pandas as pd
 import re
 #Transform 
@@ -72,6 +71,13 @@ def transformar_datos(df):
         .str.replace("--", "-",regex=False) #Corrige dobles guiones
     )
 
+    df["metodo de llegada"] = ( #Tabla de cedula
+        df["metodo de llegada"] 
+        .astype(str) #Convierte los datos en string
+        .str.strip() #Elimina los espacios en blanco
+        )
+    
+
     df["cedula_valida"] = (df["cedula"].apply(validar_cedula)) #Se aplica la funcion para validar cedula 
 
     df["cliente"] = ( #Tabla de clientes
@@ -89,6 +95,9 @@ def transformar_datos(df):
 
     #Tabla peso
     df["peso"] = pd.to_numeric(df["peso"], errors="coerce") #Convierte los datos en numeros
+    df["largo"] = pd.to_numeric(df["largo"], errors="coerce") #Convierte los datos en numeros
+    df["ancho"] = pd.to_numeric(df["ancho"], errors="coerce") #Convierte los datos en numeros
+    df["alto"] = pd.to_numeric(df["alto"], errors="coerce") #Convierte los datos en numeros
 
     duplicados = df.duplicated(
             subset = ["tracking"],
@@ -96,11 +105,38 @@ def transformar_datos(df):
         
     )
 
-    df_validos = df[df["peso"].notna() & (df["peso"] > 0) & (df["cedula_valida"]) & (~duplicados)].copy() #Detecta los pesos validos
-    df_invalidos = df[df["peso"].isna() | (df["peso"] <= 0) | (~df["cedula_valida"]) | (duplicados)].copy() #Detecta pesos no validos como datos N/A y menores a 0
+    df_validos = df[df["peso"].notna() & (df["peso"] > 0) & (df["largo"].notna() & (df["largo"] > 0)) & (df["ancho"].notna() & (df["ancho"] > 0)) & (df["alto"].notna() & (df["alto"] > 0)) & (df["cedula_valida"]) & (~duplicados)].copy() #Detecta los pesos validos
+    df_invalidos = df[df["peso"].isna() | (df["peso"] <= 0) | (df["largo"].isna() | (df["largo"] <= 0)) | (df["ancho"].isna() | (df["ancho"] <= 0)) | (df["alto"].isna() | (df["alto"] <= 0)) | (~df["cedula_valida"]) | (duplicados)].copy() #Detecta pesos y dimensiones no validos como datos N/A y menores o iguales a 0
 
     df_validos["categoria"] = df_validos["descripcion"].apply(clasificar_producto) #Se inserta categoria en la tabla
     df_validos["tarifa_preliminar"] = df_validos["peso"].apply(calcular_tarifa) #Se inserta la tarifa en la tabla
+
+    # Motivo por el que cada fila cayó en invalidos -- sin esto, filas que a
+    # simple vista se ven bien (ej. cedula y peso correctos) parecen invalidas
+    # "sin razon" cuando en realidad el motivo es un tracking duplicado que
+    # no se nota porque la otra copia tiene un formato distinto (mayus/guion),
+    # o alguna dimension (largo/ancho/alto) vacia o en cero.
+    motivos = []
+    for i in df_invalidos.index:
+        razones = []
+        if duplicados.loc[i]:
+            razones.append("tracking duplicado")
+        if not df.loc[i, "cedula_valida"]:
+            razones.append("cedula con formato invalido")
+        peso_val = df.loc[i, "peso"]
+        if pd.isna(peso_val):
+            razones.append("peso no numerico o vacio")
+        elif peso_val <= 0:
+            razones.append("peso debe ser mayor a 0")
+        for campo, etiqueta in (("largo", "largo"), ("ancho", "ancho"), ("alto", "alto")):
+            valor = df.loc[i, campo]
+            if pd.isna(valor):
+                razones.append(f"{etiqueta} no numerico o vacio")
+            elif valor <= 0:
+                razones.append(f"{etiqueta} debe ser mayor a 0")
+        motivos.append("; ".join(razones) if razones else "motivo no identificado")
+
+    df_invalidos["motivo"] = motivos
 
     df_validos = df_validos.drop(columns=["cedula_valida"])
 
@@ -120,6 +156,16 @@ def transformar_datos(df):
         ).sum()
     )
 
+    dimensiones_invalidas = int(
+        (
+            df["largo"].isna() | (df["largo"] <= 0)
+            |
+            df["ancho"].isna() | (df["ancho"] <= 0)
+            |
+            df["alto"].isna() | (df["alto"] <= 0)
+        ).sum()
+    )
+
     return {
 
         "validos": df_validos,
@@ -130,5 +176,7 @@ def transformar_datos(df):
 
         "cedulas_invalidas": cedulas_invalidas,
 
-        "pesos_invalidos": pesos_invalidos
+        "pesos_invalidos": pesos_invalidos,
+
+        "dimensiones_invalidas": dimensiones_invalidas
     }

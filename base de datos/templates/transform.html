@@ -1,98 +1,132 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Transform · Manifiesto ETL{% endblock %}
+{% set stage = 'transform' %}
 
-<html lang="es">
+{% block content %}
 
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Transformación</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
-</head>
-
-<body>
-
-<div class="container">
-
-    <h1>Resultado de Transform</h1>
-
-
-    <div class="resumen">
-
-        <div>
-            <strong>{{ total }}</strong>
-            <span>Originales</span>
-        </div>
-
-        <div>
-            <strong>{{ validos }}</strong>
-            <span>Válidos</span>
-        </div>
-
-        <div>
-            <strong>{{ invalidos }}</strong>
-            <span>Inválidos</span>
-        </div>
-
-        <div>
-            <strong>{{ duplicados }}</strong>
-            <span>Duplicados</span>
-        </div>
-
-        <div>
-            <strong>{{ cedulas_invalidas }}</strong>
-            <span>Cédulas inválidas</span>
-        </div>
-
-        <div>
-            <strong>{{ pesos_invalidos }}</strong>
-            <span>Pesos inválidos</span>
-        </div>
-
-    </div>
-
-
-    <h2>Registros válidos</h2>
-
-    <div class="tabla-container">
-
-        {{ tabla_validos | safe }}
-
-    </div>
-
-
-    <h2>Registros inválidos</h2>
-
-    <div class="tabla-container">
-
-        {{ tabla_invalidos | safe }}
-
-    </div>
-
-
-    <form action="/load" method="POST">
-
-        <button type="submit">
-            Cargar datos a MariaDB
-        </button>
-
-    </form>
-
-
-    <br>
-
-
-    <a href="/">
-        Cargar otro archivo
-    </a>
-
+<div class="waybill-row">
+  <div class="waybill tone-total">
+    <div class="wb-label">Total original</div>
+    <div class="wb-value">{{ total }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-ok">
+    <div class="wb-label">Válidos</div>
+    <div class="wb-value">{{ validos }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-bad">
+    <div class="wb-label">Inválidos</div>
+    <div class="wb-value">{{ invalidos }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Duplicados</div>
+    <div class="wb-value">{{ duplicados }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Cédula inválida</div>
+    <div class="wb-value">{{ cedulas_invalidas }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Peso inválido</div>
+    <div class="wb-value">{{ pesos_invalidos }}</div>
+    <div class="wb-barcode"></div>
+  </div>
+  <div class="waybill tone-warn">
+    <div class="wb-label">Dimensión inválida</div>
+    <div class="wb-value">{{ dimensiones_invalidas }}</div>
+    <div class="wb-barcode"></div>
+  </div>
 </div>
 
-</body>
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Paso 02 completado</p>
+      <h2>Resultado de la validación</h2>
+    </div>
+    <div class="meta">{{ validos }} / {{ total }} listos para carga</div>
+  </div>
 
-</html>
+  <div class="table-section">
+    <h3><span class="dot ok"></span>Registros válidos ({{ validos }})</h3>
+    <div class="table-wrap">
+      {{ tabla_validos | safe }}
+    </div>
+  </div>
+
+  <div class="table-section">
+    <h3><span class="dot bad"></span>Registros inválidos ({{ invalidos }})</h3>
+
+    {% if invalidos_registros %}
+    <form action="/transform/corregir" method="post">
+      <div class="table-wrap">
+        <table class="tabla tabla-editable">
+          <thead>
+            <tr>
+              <th>Tracking</th>
+              <th>Cédula</th>
+              <th>Cliente</th>
+              <th>Descripción</th>
+              <th>Peso</th>
+              <th>Largo</th>
+              <th>Ancho</th>
+              <th>Alto</th>
+              <th>Método</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in invalidos_registros %}
+            <tr>
+              <td>
+                <input type="hidden" name="idx" value="{{ r.idx }}">
+                <input type="text" name="tracking" value="{{ r.tracking }}">
+              </td>
+              <td><input type="text" name="cedula" value="{{ r.cedula }}"></td>
+              <td><input type="text" name="cliente" value="{{ r.cliente }}"></td>
+              <td><input type="text" name="descripcion" value="{{ r.descripcion }}"></td>
+              <td><input type="text" name="peso" value="{{ r.peso }}" class="col-num"></td>
+              <td><input type="text" name="largo" value="{{ r.largo }}" class="col-num"></td>
+              <td><input type="text" name="ancho" value="{{ r.ancho }}" class="col-num"></td>
+              <td><input type="text" name="alto" value="{{ r.alto }}" class="col-num"></td>
+              <td><input type="text" name="metodo" value="{{ r.metodo }}"></td>
+              <td class="col-motivo">{{ r.motivo }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="actions-row" style="margin-top:14px;">
+        <span class="meta" style="align-self:center;">Corrige los campos y vuelve a validar</span>
+        <button type="submit" class="btn btn-ghost">
+          Revalidar corregidos
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+    {% else %}
+    <div class="empty-hint">No hay registros inválidos en este lote.</div>
+    {% endif %}
+  </div>
+
+  <div class="actions-row">
+    <a href="/" class="btn btn-ghost">Cargar otro archivo</a>
+    <form action="/load" method="post">
+      <button type="submit" class="btn" {{ 'disabled' if validos == 0 else '' }}>
+        Ejecutar Load
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

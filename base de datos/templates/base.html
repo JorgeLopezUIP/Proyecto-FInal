@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Manifiesto ETL{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">ETL</div>
+      <div class="brand-text">
+        <h1>Manifiesto de Carga</h1>
+        <span>Extract · Transform · Load</span>
+      </div>
+    </div>
+    <div class="batch-id">
+      LOTE <b>#{{ session.get('lote', '——') }}</b><br>
+      {{ session.get('archivo_nombre', 'sin archivo') }}
+    </div>
+  </div>
+
+  <div class="mainnav">
+    <a href="/" class="navlink {{ 'is-active' if stage is defined else '' }}">Proceso ETL</a>
+    <a href="/paquetes" class="navlink {{ 'is-active' if request.path.startswith('/paquetes') else '' }}">Paquetes</a>
+  </div>
+
+  {% if stage is defined %}
+  <div class="stepper">
+    <div class="step {{ 'is-active' if stage=='extract' else 'is-done' if stage in ['transform','load'] else '' }}">
+      <span class="step-num">01</span>
+      <div>
+        <div class="step-label">Extract</div>
+        <div class="step-sub">leer archivo origen</div>
+      </div>
+    </div>
+    <div class="step {{ 'is-active' if stage=='transform' else 'is-done' if stage=='load' else '' }}">
+      <span class="step-num">02</span>
+      <div>
+        <div class="step-label">Transform</div>
+        <div class="step-sub">validar y clasificar</div>
+      </div>
+    </div>
+    <div class="step {{ 'is-active' if stage=='load' else '' }}">
+      <span class="step-num">03</span>
+      <div>
+        <div class="step-label">Load</div>
+        <div class="step-sub">insertar en destino</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <div class="foot">
+    <span>manifiesto-etl · panel interno</span>
+    <span>{{ session.get('lote', '——') }}</span>
+  </div>
+
+</div>
+
+</body>
+</html>
