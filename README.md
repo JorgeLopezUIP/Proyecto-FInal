@@ -11,3 +11,4 @@
 6.Una ves visualizados los datos presionar en Transformar datos
 
 7.Carga los datos validos a MariaDB
+8. Descargue Panama_express_dashboardoficial.pbix e insértelo en power bi 
